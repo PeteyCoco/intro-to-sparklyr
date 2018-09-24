@@ -1,6 +1,6 @@
 ---
 title: "Sparklyr Introduction"
-output: html_notebook
+output: rmarkdown::github_document
 ---
 
 In this notebook we walk through some basic examples of how to use sparklyr in R. This notebook is based on the guide provided at http://spark.rstudio.com/. 
@@ -35,7 +35,7 @@ Let's try a simple filtering example:
 # filter by departure delay and print the first few records
 flights_tbl %>% filter(dep_delay == 2) %>% head()
 ```
-Let's quickly review some dplyr grammar: The pipe operator %>% indicates feeding the expression on its left-hand side into the function on the right-hand side. This allows us to chain many functions on a dataframe while maintaining readability of the command ( compare the above with head(filter(flights_tbl, dep_delay==2)) ).
+Let's quickly review some dplyr grammar: The pipe operator `%>%` indicates feeding the expression on its left-hand side into the function on the right-hand side. This allows us to chain many functions on a dataframe while maintaining readability of the command (compare the above with the equivalent expression `head(filter(flights_tbl, dep_delay==2))` ).
 
 A more coplicated example:
 ```{r}
@@ -54,4 +54,4 @@ ggplot(delay, aes(dist, delay)) +
   scale_size_area(max_size = 2)
 ```
 
-Now we revie ggplot2 syntax: The first line specifies the x-y axes of the plot. Each additional line preceded by a '+' indicates another layer to be added. The first layer added is a scatter plot where the point size is determined by the counts of instances. The second layer is a smoothed conditional mean with standard errors. The conditional mean is modeled by a generalized additive model (GAM) and the confidence intervals are determined by asymptotics ( I assum;  verify this). We will not take the smoothing function too seriously, it is simply here to roughly illustrate the conditional mean.
+Now we review ggplot2 syntax: The first line specifies the x-y axes of the plot. Each additional line preceded by a '+' indicates another layer to be added. The first layer added is a scatter plot where the point size is determined by the counts of instances. The second layer is a smoothed conditional mean with standard errors. The conditional mean is modeled by a generalized additive model (GAM) and the confidence intervals are determined by asymptotics (I assume;  verify this). We will not take the smoothing function too seriously, it is simply here to roughly illustrate the conditional mean.
