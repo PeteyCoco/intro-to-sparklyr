@@ -1,0 +1,57 @@
+---
+title: "Sparklyr Introduction"
+output: html_notebook
+---
+
+In this notebook we walk through some basic examples of how to use sparklyr in R. This notebook is based on the guide provided at http://spark.rstudio.com/. 
+
+## Connecting to Spark
+
+Before we start we must install a local instance of Spark
+```{r}
+library(sparklyr)
+spark_install(version = "2.1.0")
+```
+
+We can connect to clusters and local instances of Spark as follows (I had to create a new Spark connection first):
+```{r}
+sc <- spark_connect(master = "local")
+```
+
+## Using dplyr
+
+Next we will show that we cn use all of the standard dplyr verbs against tables in the cluster. First we must populate the cluster with data:
+```{r}
+library(dplyr)
+iris_tbl <- copy_to(sc, iris)
+flights_tbl <- copy_to(sc, nycflights13::flights, "flights")
+batting_tbl <- copy_to(sc, Lahman::Batting, "batting")
+src_tbls(sc)
+```
+Visiting the SparkUI we see that this is a relatively small database (only about 50MB). We could imagine in real cases we would be working with larger databases. Note that the data tables lie `iris_tbl` are lists and are not stored in memory.
+
+Let's try a simple filtering example:
+```{r}
+# filter by departure delay and print the first few records
+flights_tbl %>% filter(dep_delay == 2) %>% head()
+```
+Let's quickly review some dplyr grammar: The pipe operator %>% indicates feeding the expression on its left-hand side into the function on the right-hand side. This allows us to chain many functions on a dataframe while maintaining readability of the command ( compare the above with head(filter(flights_tbl, dep_delay==2)) ).
+
+A more coplicated example:
+```{r}
+delay <- flights_tbl %>% 
+  group_by(tailnum) %>%
+  summarise(count = n(), dist = mean(distance), delay = mean(arr_delay)) %>%
+  filter(count > 20, dist < 2000, !is.na(delay)) %>%
+  collect
+```
+Plot the queried data:
+```{r}
+library(ggplot2)
+ggplot(delay, aes(dist, delay)) +
+  geom_point(aes(size = count), alpha = 1/2) +
+  geom_smooth() +
+  scale_size_area(max_size = 2)
+```
+
+Now we revie ggplot2 syntax: The first line specifies the x-y axes of the plot. Each additional line preceded by a '+' indicates another layer to be added. The first layer added is a scatter plot where the point size is determined by the counts of instances. The second layer is a smoothed conditional mean with standard errors. The conditional mean is modeled by a generalized additive model (GAM) and the confidence intervals are determined by asymptotics ( I assum;  verify this). We will not take the smoothing function too seriously, it is simply here to roughly illustrate the conditional mean.
