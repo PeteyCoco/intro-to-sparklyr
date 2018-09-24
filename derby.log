@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
-Mon Sep 24 14:08:02 EDT 2018:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0166-0cc4-4620-000004e80708 
-on database directory memory:/home/peter/R/intro-to-sparklyr/databaseName=metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@592cd399 
+Mon Sep 24 14:25:30 EDT 2018:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0166-0cd4-45c9-0000029ac678 
+on database directory memory:/home/peter/R/intro-to-sparklyr/databaseName=metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@389ff904 
 Loaded from file:/home/peter/spark/spark-2.1.0-bin-hadoop2.7/jars/derby-10.12.1.1.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.8.0_171-8u171-b11-0ubuntu0.16.04.1-b11
