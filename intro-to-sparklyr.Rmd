@@ -5,6 +5,9 @@ output: html_notebook
 
 In this notebook we walk through some basic examples of how to use sparklyr in R. This notebook is based on the guide provided at http://spark.rstudio.com/. 
 
+## Local Mode
+We are interested in using Spark to perform distributed computations in R, so what benefit is there in running it in local mode? In most cases we use local mode for debugging code without the need to be connected to a Spark cluster. For us it is used for running a basic  demonstration of Spark in R using **sparklyr**.
+
 ## Connecting to Spark
 First we load **sparklyr** and install Spark if it is not already installed:
 ```{r}
@@ -15,6 +18,7 @@ We can connect to clusters and local instances of Spark as follows (In RStudio m
 ```{r}
 sc <- spark_connect(master = "local")
 ```
+The above snippet creates a new SparkContext with the master node set as the local machine. More details about how Spark carries out computations on a cluster is given [here](http://spark.apache.org/docs/latest/cluster-overview.html). The status of the SparkContext can be monitored in a web view, accessed by clicking SparkUI in the Connections tab of RStudio. An overview of SparUI is given [here](https://jaceklaskowski.gitbooks.io/mastering-apache-spark/content/spark-webui.html).
 
 ## Using dplyr
 Next we will show that we can use all of the standard dplyr verbs against tables in the cluster. First we must populate the cluster with data:
@@ -82,3 +86,27 @@ The `summary()` function provides an `lm()`-like summary output:
 ```{r}
 summary(fit)
 ```
+
+## Reading and Writing Data
+We can write data into the local filesystem or the Spark cluster from various file formats. To demonstrate we will create a CSV, JSON, and Parquet file from the example datasets and write them  back into the database. First create tempfiles:
+```{r}
+temp_csv <- tempfile(fileext = ".csv")
+temp_parquet <- tempfile(fileext = ".parquet")
+temp_json <- tempfile(fileext = ".json")
+```
+Then we write them into Spark with the appropriate functions:
+```{r}
+spark_write_csv(iris_tbl, temp_csv)
+iris_csv_tbl <- spark_read_csv(sc, "iris_csv", temp_csv)
+
+spark_write_parquet(iris_tbl, temp_parquet)
+iris_parquet_tbl <- spark_read_parquet(sc, "iris_parquet", temp_parquet)
+
+spark_write_json(iris_tbl, temp_json)
+iris_json_tbl <- spark_read_json(sc, "iris_json", temp_json)
+```
+In each case the data file is read into a Spark DataFrame, the native data object used in Spark. Verify that the data has been written to Spark:
+```{r}
+src_tbls(sc) # A dplyr function that lists all tables held in a data source
+```
+
